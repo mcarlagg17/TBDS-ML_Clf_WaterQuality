@@ -28,10 +28,10 @@ imbalanced_data = True  # True: if is used imbalanced data
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-#import datetime as dt
+import datetime as dt
 import seaborn as sns
 import scipy.stats as ss
-#import time
+import time
 import os 
 import statsmodels.api as sm
 import matplotlib.colors as mcolors
@@ -50,8 +50,8 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 
 # Machine Learning models
-
-from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
+from sklearn.model_selection import (GridSearchCV, RandomizedSearchCV, cross_val_score, cross_val_predict,
+                                     StratifiedKFold, learning_curve)
 
 if supervised:
 
@@ -88,6 +88,7 @@ if deep_learning :
 
 # Prepare and train models
 from sklearn.model_selection import train_test_split
+from sklearn.feature_selection import RFE
 
 # Model metrics evaluation
 if model_of_=='c':
