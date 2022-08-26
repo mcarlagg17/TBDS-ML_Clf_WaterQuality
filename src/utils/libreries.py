@@ -61,6 +61,7 @@ if supervised:
         from sklearn.tree import DecisionTreeClassifier,ExtraTreeClassifier
         from sklearn.ensemble import (RandomForestClassifier,BaggingClassifier,VotingClassifier,
                                     AdaBoostClassifier,GradientBoostingClassifier,)
+        from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
         from sklearn.svm import SVC
         from xgboost import XGBClassifier
         

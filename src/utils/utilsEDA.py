@@ -1,7 +1,6 @@
 # --------------------------------------------------------------------------------
 # FUNCIONES
 # --------------------------------------------------------------------------------
-
 from .libreries import *
 
             ###
@@ -334,6 +333,82 @@ def chi2_comp(df,var1,var2,alpha=0.05):
 
     return res,flag
 
+
+                ###
+# **Funciones para trabajar con archivos**
+                ###
+
+
+def save_file(file, head, content, dir = 'data', sep = ';'):
+    '''
+    Objetivo: archivar datos en un .csv o .txt provenientes de una lista. 
+
+    args.
+    ----
+    file: str; nombre del archivo.
+    head: str; cabecera/columnas del archivo separadas por ';'.
+    content: list; contenido a almacenar.
+
+    ret.
+    ----
+    No devuelve nada, solo realiza el guardado. 
+    '''
+    # Comprobar que existe el fichero/ directorio
+    # print(os.getcwd())
+    ruta_dir=os.path.join(os.getcwd(), dir)
+    os.makedirs(ruta_dir,exist_ok=True)
+    ruta_file=os.path.join(ruta_dir,f'{file}')
+    if os.path.exists(ruta_file):
+        # Crear directorio y fichero si no existe
+        with open(ruta_file, mode='a',newline='\n') as out:
+            # Guardar la informacion
+            # print(type(content))
+            [out.write(cont+sep) if (content[-1]!=cont) else out.write(cont) for cont in content]
+            out.write('\n')
+    
+    else:   
+        with open(ruta_file, mode='w') as out:
+            out.write(head+'\n')
+            print(type(content))
+
+            # Guardar la informacion
+            [out.write(cont+sep) if (content[-1]!=cont) else out.write(cont) for cont in content]
+            out.write('\n')
+
+def dict4save(dict, name_file, dirf, addcols = False, cols = 'new cols', vals = 'values cols added', sep = ';'):
+    '''
+    Objetivo:
+    ---
+    Guarda los valores obtenidos como dict en el .csv o .txt.
+
+    args.
+    ---
+    dict: dict; diccionario con los valores a guardar.
+    name_file: str; nombre del archivo donde se van a guardar los datos.
+    dirf: str; nombre del directorio o ruta relativa donde está el archivo.
+    addcols: bool; True: si queremos añadir columnas extras a las del diccionario. 
+                   False: si no.
+    cols: str; nombre de la(s) columna(s). (opcional; si hay más de una utilizar el separador)
+    vals: str; valores de la(s) nueva(s) columna(s). (opcional; si hay más de una utilizar el separador)
+    sep: str; separador utilizado en el archivo .csv o .txt
+
+    ret.
+    ---
+    print: Finished cuando termina.
+    '''
+
+    str_dict=''
+
+    for str_k in list(dict.keys()):
+        str_dict = str_dict+str_k+sep
+    values = [str(val) for val in dict.values()]
+    values.insert(0,vals)
+    if addcols:
+        save_file(name_file,cols+sep+str_dict[:-1],values,dir = dirf)
+    else:
+        save_file(name_file,str_dict[:-1],values,dir = dirf)
+    
+    print('Finished')
 
 # ---------
 # CLASES 

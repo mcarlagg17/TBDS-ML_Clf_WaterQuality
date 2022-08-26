@@ -1,4 +1,5 @@
 from .libreries import *
+from .utilsEDA import *
 
             ###
 # **Funciones Machine Learning:**
@@ -76,9 +77,8 @@ def eval_metrics(y_pred,y_test,clf=True):
     
     '''
     if clf:
-
+        #confusion_mtx = confusion_matrix(y_test,y_pred)
         clf_metrics = {
-            'CMTX' : confusion_matrix(y_test,y_pred),
             'ACC' : accuracy_score(y_test,y_pred),
             'Precision' : precision_score(y_test,y_pred),
             'Recall' : recall_score(y_test,y_pred),
@@ -86,7 +86,7 @@ def eval_metrics(y_pred,y_test,clf=True):
             'ROC' : roc_auc_score(y_test,y_pred)
         }
 
-        print(pd.DataFrame({'Values':clf_metrics.values()},index=clf_metrics.keys()))
+        #print(pd.DataFrame({'Values':clf_metrics.values()},index=clf_metrics.keys()))
 
         return clf_metrics
 
@@ -99,7 +99,7 @@ def eval_metrics(y_pred,y_test,clf=True):
             'R2' : r2_score(y_test,y_pred)
         }   
 
-        print(pd.DataFrame({'Values':reg_metrics.values()},index=reg_metrics.keys()))
+        #print(pd.DataFrame({'Values':reg_metrics.values()},index=reg_metrics.keys()))
 
         return reg_metrics  
 
@@ -131,7 +131,7 @@ def baseline(data, target, base_model = None, clf = True, tsize = 0.2, random = 
 
     X = data.drop([target], axis=1)
     y = data[target].copy()
-    print('X shape: ',X.shape, '; y shape: ',y.shape)
+    #print('X shape: ',X.shape, '; y shape: ',y.shape)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = tsize, random_state = random)
 
@@ -144,7 +144,11 @@ def baseline(data, target, base_model = None, clf = True, tsize = 0.2, random = 
         'Xytrain' : [X_train, y_train],
         'ypred' : y_pred
     }
-    return eval_metrics(y_pred,y_test,clf), model_pack
+
+    metrics = eval_metrics(y_pred,y_test,clf)
+    
+    dict4save(metrics,'metrics.csv','model/model_metrics',addcols=True,cols='model',vals=str(base_model),sep=';')
+    return metrics, model_pack
 
 def choose_params(model,clf = True):
     '''
@@ -184,6 +188,7 @@ def choose_params(model,clf = True):
             'GBC' : {},
             'SVC' : {},
             'XGBC' : {},
+            'VC' : {}
         }
 
         return clf_params[model]
@@ -223,23 +228,47 @@ def choose_models(model, params, clf = True):
     '''
     
     if clf :
+        if params == None:
 
-        classification_models={
+            classification_models={
 
-            'LogReg' : LogisticRegression(params),
-            'KNNC' : KNeighborsClassifier(params),
-            'DTC' : DecisionTreeClassifier(params),
-            'ETC' : ExtraTreeClassifier(params),
-            'RFC' : RandomForestClassifier(params),
-            'BagC' : BaggingClassifier(params), 
-            'AdaBC' : AdaBoostClassifier(params),
-            'GBC' : GradientBoostingClassifier(params),
-            'SVC' : SVC(params),
-            'XGBC' : XGBClassifier(params)
+                'LogReg' : LogisticRegression(),
+                'KNNC' : KNeighborsClassifier(),
+                'DTC' : DecisionTreeClassifier(),
+                'ETC' : ExtraTreeClassifier(),
+                'RFC' : RandomForestClassifier(),
+                'BagC' : BaggingClassifier(), 
+                'AdaBC' : AdaBoostClassifier(),
+                'GBC' : GradientBoostingClassifier(),
+                'SVC' : SVC(),
+                'XGBC' : XGBClassifier(),
+                'VC': VotingClassifier(estimators=[('RFC',RandomForestClassifier())]),
+                'LDA': LinearDiscriminantAnalysis()
+            }
 
-        }
+        else:
+            classification_models={
 
-        return classification_models[model]
+                'LogReg' : LogisticRegression(params),
+                'KNNC' : KNeighborsClassifier(params),
+                'DTC' : DecisionTreeClassifier(params),
+                'ETC' : ExtraTreeClassifier(params),
+                'RFC' : RandomForestClassifier(params),
+                'BagC' : BaggingClassifier(params), 
+                'AdaBC' : AdaBoostClassifier(params),
+                'GBC' : GradientBoostingClassifier(params),
+                'SVC' : SVC(params),
+                'XGBC' : XGBClassifier(params),
+                'VC': VotingClassifier(params),
+                'LDA': LinearDiscriminantAnalysis(params)
+            }
+
+
+        if model == 'all':
+            return classification_models
+
+        else:
+            return classification_models[model]
 
     else : 
 
@@ -260,5 +289,8 @@ def choose_models(model, params, clf = True):
             'XGBR' : XGBRegressor(params)
             
         }
+        if model == 'all':
+            return regression_models
 
-        return regression_models[model]
+        else:
+            return regression_models[model]
