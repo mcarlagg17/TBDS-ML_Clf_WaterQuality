@@ -99,7 +99,8 @@ def eval_metrics(y_pred,y_test,clf=True):
             'Precision' : precision_score(y_test,y_pred),
             'Recall' : recall_score(y_test,y_pred),
             'F1' : f1_score(y_test,y_pred),
-            'ROC' : roc_auc_score(y_test,y_pred)
+            'ROC' : roc_auc_score(y_test,y_pred),
+            'Jaccard' : jaccard_score(y_test,y_pred)
         }
 
         #print(pd.DataFrame({'Values':clf_metrics.values()},index=clf_metrics.keys()))
