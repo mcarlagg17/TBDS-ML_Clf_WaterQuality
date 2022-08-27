@@ -9,9 +9,11 @@ from .utilsEDA import *
 def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
                         n_jobs=-1, train_sizes=np.linspace(.1, 1.0, 5)):
     """
+    Objetivo: 
+    ---
     Generate a simple plot of the test and traning learning curve.
 
-    Parameters
+    args.
     ----------
     estimator : object type that implements the "fit" and "predict" methods
         An object of that type which is cloned for each validation.
@@ -41,8 +43,7 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
     x1 = np.linspace(0, 10, 8, endpoint=True) produces
         8 evenly spaced points in the range 0 to 10
     """
-    
-    
+
     plt.figure()
     plt.title(title)
     if ylim is not None:
@@ -74,8 +75,23 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
 
 def eval_metrics(y_pred,y_test,clf=True):
     '''
-    
+    Objetivo: 
+    ---
+    Evaluar el modelo con las métricas que correspondan.
+
+    args.
+    ---
+    y_pred: la predicción realizada por el modelo. 
+    y_test: el resultado real del test. 
+    clf: bool; True: si es clasificación.
+               False: si es regresión.
+
+    ret.
+    ---
+    dict; resultado de las métricas.
+
     '''
+
     if clf:
         #confusion_mtx = confusion_matrix(y_test,y_pred)
         clf_metrics = {
@@ -104,7 +120,7 @@ def eval_metrics(y_pred,y_test,clf=True):
         return reg_metrics  
 
 
-def baseline(data, target, base_model = None, clf = True, tsize = 0.2, random = 77):
+def baseline(data, target, base_model = None, clf = True, file_name = 'metrics.csv', dir_file = 'model/model_metrics', tsize = 0.2, random = 77):
     '''
     Objetivo: 
     ---
@@ -121,6 +137,15 @@ def baseline(data, target, base_model = None, clf = True, tsize = 0.2, random = 
 
     *ret.
     ----
+    metricas de evaluación del modelo y el pack: 
+        model_pack = {
+
+            'trained_model' : estimator,
+            'Xytest' : [X_test, y_test],
+            'Xytrain' : [X_train, y_train],
+            'ypred' : y_pred
+        }
+
     '''
 
     if base_model == None:
@@ -147,20 +172,25 @@ def baseline(data, target, base_model = None, clf = True, tsize = 0.2, random = 
 
     metrics = eval_metrics(y_pred,y_test,clf)
     
-    dict4save(metrics,'metrics.csv','model/model_metrics',addcols=True,cols='model',vals=str(base_model),sep=';')
+    dict4save(metrics, file_name, dir_file, addcols=True, cols='model', vals=str(base_model),sep=';')
+    
     return metrics, model_pack
 
 def choose_params(model,clf = True):
     '''
     Objetivo: 
     ---
-
+    Elegir los parametros a probar para un modelo concreto.
 
     *args.
     ----
+    model: modelo del cual se quieren los parametros.
+    clf: bool; True: si se trata de un modelo de clasificación. 
 
     *ret.
     ----
+    dict; con los parametros a probar.
+
     '''
     if clf :
 
@@ -177,10 +207,20 @@ def choose_params(model,clf = True):
             'KNNC' : {
 
                 'n_neighbors' : [3,5,7,9,11,13,15],
-                '' : [],
+                'weights' : ['uniform','distance'],
+                'algorithm' : ['ball_tree','kd_tree','brute','auto'],
+                'leaf_size' : [20,30,40],
+                'p' : [1,2]
 
             },
-            'DTC' : {},
+
+            'DTC' : {
+                
+                'criterion' : ['log_loss','gini','entropy'],
+                'splitter' : ['best','random'],
+                'max_depth' : []
+
+            },
             'ETC' : {},
             'RFC' : {},
             'BagC' : {},
@@ -218,13 +258,17 @@ def choose_models(model, params, clf = True):
     '''
     Objetivo: 
     ---
-    
+    Elegir el modelo o los modelos que correspondan.
 
     *args.
     ----
+    model: str; modelo que se quiere seleccionar. 
+        'all': selecciona todos los modelos. 
 
     *ret.
     ----
+    El/los modelos seleccionados.
+
     '''
     
     if clf :
@@ -264,7 +308,7 @@ def choose_models(model, params, clf = True):
             }
 
 
-        if model == 'all':
+        if model == 'all' and params == None:
             return classification_models
 
         else:
@@ -272,25 +316,52 @@ def choose_models(model, params, clf = True):
 
     else : 
 
-        regression_models={
+        if params == None:
 
-            'LinReg' : LinearRegression(params),
-            'KNNR' : KNeighborsRegressor(params),
-            'GNBR' : GaussianNB(params),
-            'BNBR' : BernoulliNB(params),
-            'ENR' : ElasticNet(params),
-            'DTR' : DecisionTreeRegressor(params),
-            'ETR' : ExtraTreeRegressor(params),
-            'RFR' : RandomForestRegressor(params),
-            'BagR' : BaggingRegressor(params), 
-            'AdaBR' : AdaBoostRegressor(params),
-            'GBR' : GradientBoostingRegressor(params),
-            'SVR' : SVR(params),
-            'XGBR' : XGBRegressor(params)
-            
-        }
-        if model == 'all':
+            regression_models={
+
+                'LinReg' : LinearRegression(),
+                'KNNR' : KNeighborsRegressor(),
+                'GNBR' : GaussianNB(),
+                'BNBR' : BernoulliNB(),
+                'ENR' : ElasticNet(),
+                'DTR' : DecisionTreeRegressor(),
+                'ETR' : ExtraTreeRegressor(),
+                'RFR' : RandomForestRegressor(),
+                'BagR' : BaggingRegressor(), 
+                'AdaBR' : AdaBoostRegressor(),
+                'GBR' : GradientBoostingRegressor(),
+                'SVR' : SVR(),
+                'XGBR' : XGBRegressor()
+                
+            }
+
+        else:
+
+            regression_models={
+
+                'LinReg' : LinearRegression(params),
+                'KNNR' : KNeighborsRegressor(params),
+                'GNBR' : GaussianNB(params),
+                'BNBR' : BernoulliNB(params),
+                'ENR' : ElasticNet(params),
+                'DTR' : DecisionTreeRegressor(params),
+                'ETR' : ExtraTreeRegressor(params),
+                'RFR' : RandomForestRegressor(params),
+                'BagR' : BaggingRegressor(params), 
+                'AdaBR' : AdaBoostRegressor(params),
+                'GBR' : GradientBoostingRegressor(params),
+                'SVR' : SVR(params),
+                'XGBR' : XGBRegressor(params)
+                
+            }
+
+        if model == 'all'and params == None:
             return regression_models
 
         else:
             return regression_models[model]
+
+def save_model():
+    
+    return 
