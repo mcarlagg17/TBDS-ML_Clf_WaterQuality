@@ -172,8 +172,10 @@ def baseline(data, target, base_model = None, clf = True, file_name = 'metrics.c
     }
 
     metrics = eval_metrics(y_pred,y_test,clf)
-    
-    dict4save(metrics, file_name, dir_file, addcols=True, cols='model', vals=str(base_model),sep=';')
+    model_str = str(base_model)
+    model_str = model_str[0:model_str.find('(')]
+
+    dict4save(metrics, file_name, dir_file, addcols=True, cols='model', vals=model_str,sep=';')
     
     return metrics, model_pack
 
@@ -229,7 +231,6 @@ def choose_params(model,clf = True):
             'GBC' : {},
             'SVC' : {},
             'XGBC' : {},
-            'VC' : {}
         }
 
         return clf_params[model]

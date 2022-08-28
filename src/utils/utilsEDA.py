@@ -394,7 +394,7 @@ def dict4save(dict, name_file, dirf, addcols = False, cols = 'new cols', vals = 
 
     ret.
     ---
-    print: Finished cuando termina.
+    print: Saved cuando termina.
     '''
 
     str_dict=''
@@ -408,7 +408,7 @@ def dict4save(dict, name_file, dirf, addcols = False, cols = 'new cols', vals = 
     else:
         save_file(name_file,str_dict[:-1],values,dir = dirf)
     
-    print('Finished')
+    print('Saved')
 
 # ---------
 # CLASES 
