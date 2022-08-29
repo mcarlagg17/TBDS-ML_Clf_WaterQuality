@@ -402,8 +402,9 @@ def dict4save(dict, name_file, dirf, addcols = False, cols = 'new cols', vals = 
     for str_k in list(dict.keys()):
         str_dict = str_dict+str_k+sep
     values = [str(val) for val in dict.values()]
-    values.insert(0,vals)
+    
     if addcols:
+        values.insert(0,vals)
         save_file(name_file,cols+sep+str_dict[:-1],values,dir = dirf)
     else:
         save_file(name_file,str_dict[:-1],values,dir = dirf)

@@ -1,0 +1,2 @@
+model;params_tried;best_params;ACC;Precision;Recall;F1;ROC;Jaccard;model_path
+values cols added;LogisticRegression;{'penalty': ['l1', 'l2', 'elasticnet', 'none'], 'class_weight': ['none', 'balanced'], 'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga'], 'max_iter': [100, 150, 200, 500]};{'class_weight': 'balanced', 'max_iter': 100, 'penalty': 'none', 'solver': 'newton-cg'};0.795625;0.3048780487804878;0.7485029940119761;0.4332755632582322;0.7748097663709566;0.27654867256637167;model/model_metrics/LogisticRegression.pkl

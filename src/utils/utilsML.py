@@ -204,7 +204,7 @@ def choose_params(model,clf = True):
                 'penalty' : ['l1','l2','elasticnet','none'],
                 'class_weight' : ['none','balanced'],
                 'solver' : ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga'],
-                'max_iter' : [100,150,200,500]
+                'max_iter' : [50,75,100,150,200]
             },
 
             'KNNC' : {
@@ -221,11 +221,30 @@ def choose_params(model,clf = True):
                 
                 'criterion' : ['log_loss','gini','entropy'],
                 'splitter' : ['best','random'],
-                'max_depth' : []
+                'max_depth' : [7,9,11,13,None],
+                'max_features': ['log2','sqrt','auto'],
+                'class_weight' : [None,'balanced'],
+                'bootstrap' : [True,False]
 
             },
-            'ETC' : {},
-            'RFC' : {},
+
+            'ETC' : {
+                'n_estimators': np.linspace(10,150,10).astype(int),
+                'criterion': ['gini','entropy'],
+                'max_depth' : [7,9,11,13,None],
+                'max_features': ['log2','sqrt',None],
+                'class_weight' : [None,'balanced'],
+                'max_leaf_nodes' : [None,3,7,11]
+            },
+
+            'RFC' : {
+                'n_estimators': np.linspace(10,150,10).astype(int),
+                'criterion': ['gini','entropy'],
+                'max_depth' : [7,9,11,13,None],
+                'max_features': ['log2','sqrt',None],
+                'class_weight' : [None,'balanced']
+            },
+            
             'BagC' : {},
             'AdaBC' : {},
             'GBC' : {},
@@ -364,6 +383,111 @@ def choose_models(model, params, clf = True):
         else:
             return regression_models[model]
 
-def save_model():
+def save_model(model,dirname):
+    '''
     
-    return 
+    '''
+    model_str = str(model)
+    model_str = model_str[0:model_str.find('(')]
+    ruta_dir = os.path.join(os.getcwd(), dirname)
+    
+    os.makedirs(ruta_dir,exist_ok=True)
+    ruta_file = os.path.join(ruta_dir,f'{model_str}.pkl')
+    
+    
+    if os.path.exists(ruta_file):
+        for i in range(1,99):
+            ruta_file = os.path.join(ruta_dir,f'{model_str}_{i}.pkl')
+             
+            if os.path.exists(ruta_file):
+                x='otro intento'
+            else:
+                pickle.dump(model, open(ruta_file,'wb'))
+                the_path = os.path.join(dirname,f'{model_str}_{i}.pkl')
+                break
+    else:
+        pickle.dump(model, open(ruta_file,'wb'))
+        the_path = os.path.join(dirname,f'{model_str}.pkl')
+
+    print(f'Model {model_str} saved')
+    
+    return the_path 
+
+
+
+
+def models_generator(data, target, model = None, params = None, clf = True, scaling = True, scoring = {"AUC": "roc_auc", "Accuracy": make_scorer(accuracy_score)}, file_name = 'metrics.csv', dir_file = 'model/model_metrics', dir_model_file = 'model', tsize = 0.2, random = 77):
+    '''
+    Objetivo: 
+    ---
+    Crear un modelo inicial orientativo.
+
+    args.
+    ----
+    data: pd.DataFrame; el dataset completo, con los valores numéricos.
+    target: str; nombre de la columna objetivo, variable dependiente.
+    base_model: estimador que se va a utilizar. Predeterminadamente se utilizar RandomForest(). (opcional)
+    clf: True/False; si es un dataset de clasificación (True) si es de regresión (False). (opcional)
+    tsize: float; tamaño del test [0.0,1.0]. (opcional)
+    random: int; random state, semilla. (opcional)
+
+    ret.
+    ----
+        model_pack = {
+
+            'trained_model' : estimator,
+            'Xytest' : [X_test, y_test],
+            'Xytrain' : [X_train, y_train],
+            'ypred' : y_pred
+        }
+
+    '''
+
+    # Modelo por defecto:
+    if model == None:
+        if clf:
+            model = RandomForestClassifier()
+        else:
+            model = RandomForestRegressor()
+
+    # Separación data: 
+    X = data.drop([target], axis=1)
+    y = data[target].copy()
+
+    #print('X shape: ',X.shape, '; y shape: ',y.shape)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = tsize, random_state = random)
+    
+    # Escalado:
+    if scaling:
+        scaler = StandardScaler().fit_transform(X_train)
+        scaler.transform(X_test)
+
+    # Entrenando al modelo: 
+    estimator = GridSearchCV(model, params, scoring = scoring, refit = 'AUC', return_train_score = True)
+    estimator.fit(X_train,y_train)
+
+    # Predicción con el mejor estimador 
+    y_pred=estimator.best_estimator_.predict(X_test)
+
+    metrics = eval_metrics(y_pred,y_test,clf)
+    model_str = str(model)
+    model_str = model_str[0:model_str.find('(')]
+    
+    file2save = {'model':model_str,'params_tried': str(params),'best_params':str(estimator.best_params_)}
+    file2save.update(metrics)
+    print(file2save)
+    model_path = save_model(estimator.best_estimator_,dir_model_file)
+    file2save.update({'model_path' : model_path})
+
+    dict4save(file2save, file_name, dir_file, addcols=False,sep=';')
+    
+    model_pack = {
+
+        'trained_model' : estimator,
+        'Xytest' : [X_test, y_test],
+        'Xytrain' : [X_train, y_train],
+        'ypred' : y_pred,
+        'metrics' : metrics
+    }
+
+    return model_pack
