@@ -223,13 +223,12 @@ def choose_params(model,clf = True):
                 'splitter' : ['best','random'],
                 'max_depth' : [7,9,11,13,None],
                 'max_features': ['log2','sqrt','auto'],
-                'class_weight' : [None,'balanced'],
-                'bootstrap' : [True,False]
+                'class_weight' : [None,'balanced']
 
             },
 
             'ETC' : {
-                'n_estimators': np.linspace(10,150,10).astype(int),
+                #'n_estimators': np.linspace(10,80,10).astype(int),
                 'criterion': ['gini','entropy'],
                 'max_depth' : [7,9,11,13,None],
                 'max_features': ['log2','sqrt',None],
@@ -244,7 +243,7 @@ def choose_params(model,clf = True):
                 'max_features': ['log2','sqrt',None],
                 'class_weight' : [None,'balanced']
             },
-            
+
             'BagC' : {},
             'AdaBC' : {},
             'GBC' : {},
