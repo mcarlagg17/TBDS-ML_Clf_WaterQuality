@@ -244,11 +244,55 @@ def choose_params(model,clf = True):
                 'class_weight' : [None,'balanced']
             },
 
-            'BagC' : {},
-            'AdaBC' : {},
-            'GBC' : {},
-            'SVC' : {},
-            'XGBC' : {},
+            'BagC' : {
+                #'base_estimator__class_weight': ['balanced'],
+                #'base_estimator__criterion': ['gini'],
+                #'base_estimator__max_depth': [7], 
+                #'base_estimator__max_features': ['log2'], 
+                #'base_estimator__splitter': ['best'],
+                'n_estimators' : [10, 20, 30, 50, 100],
+                'max_samples' : [0.05, 0.1, 0.2, 0.5]
+            },
+            'AdaBC' : {
+                #'base_estimator__class_weight': ['balanced'],
+                #'base_estimator__criterion': ['gini'],
+                #'base_estimator__max_depth': [7], 
+                #'base_estimator__max_features': ['log2'], 
+                #'base_estimator__splitter': ['best'],
+                'n_estimators' : [10, 20, 30, 50, 100]
+            
+            },
+
+            'GBC' : {
+                #'base_estimator__class_weight': ['balanced'],
+                #'base_estimator__criterion': ['gini'],
+                #'base_estimator__max_depth': [7], 
+                #'base_estimator__max_features': ['log2'], 
+                #'base_estimator__splitter': ['best'],
+                'n_estimators' : [10, 20, 30, 50, 100],
+                'max_depth' : [7,9,11,13,None],
+                'criterion': ['friedman_mse','squared_error','mse'],
+                'loss': ['log_loss','deviance','exponential']
+            },
+
+            'SVC' : [
+                #{'C' : [1,10,50],'kernel' : ['poly','sigmoid','precomputed'],'degree' : [3,4],'class_weight' : [None,'balanced']},
+                {'C': [1, 10, 100, 1000], 'kernel': ['linear'], 'class_weight' : [None,'balanced']},
+                {'C': [1, 10, 100, 1000],  'kernel': ['rbf'],'class_weight' : [None,'balanced']}
+            ],
+
+            'XGBC' : {
+                'nthread':[4], #when use hyperthread, xgboost may become slower
+                'objective':['binary:logistic'],
+                'learning_rate': [0.05], #so called `eta` value
+                'max_depth': [4,5,6,7],
+                'min_child_weight': [1, 5, 10, 11],
+                'subsample': [0.6,0.8,1.0],
+                'colsample_bytree': [0.6,0.7,1.0],
+                'n_estimators': [5,50,100], #number of trees, change it to 1000 for better results
+                'missing':[-999],
+                'seed': [1337]
+            },
         }
 
         return clf_params[model]
@@ -458,8 +502,10 @@ def models_generator(data, target, model = None, params = None, clf = True, scal
     
     # Escalado:
     if scaling:
-        scaler = StandardScaler().fit_transform(X_train)
-        scaler.transform(X_test)
+        scaler = StandardScaler().fit(X_train)
+        X_train = scaler.transform(X_train)
+        X_test = scaler.transform(X_test)
+        
 
     # Entrenando al modelo: 
     estimator = GridSearchCV(model, params, scoring = scoring, refit = 'AUC', return_train_score = True)

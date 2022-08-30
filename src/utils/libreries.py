@@ -53,7 +53,9 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 # Machine Learning models
 from sklearn.model_selection import (GridSearchCV, RandomizedSearchCV, cross_val_score, cross_val_predict,
-                                     StratifiedKFold, learning_curve)
+                                     StratifiedKFold, RepeatedKFold, learning_curve)
+
+from sklearn.pipeline import Pipeline
 
 if supervised:
 
