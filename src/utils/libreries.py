@@ -50,6 +50,9 @@ if encode:
 
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
+from imblearn.over_sampling import SMOTE
+from imblearn.combine import SMOTEENN
+
 
 # Machine Learning models
 from sklearn.model_selection import (GridSearchCV, RandomizedSearchCV, cross_val_score, cross_val_predict,
