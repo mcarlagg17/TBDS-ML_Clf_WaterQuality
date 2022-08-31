@@ -1,5 +1,7 @@
 from .libreries import *
 from .utilsEDA import *
+import warnings
+warnings.filterwarnings('ignore')
 
             ###
 # **Funciones Machine Learning:**
@@ -44,7 +46,7 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
         8 evenly spaced points in the range 0 to 10
     """
 
-    plt.figure()
+    plt.figure(figsize=(15,8))
     plt.title(title)
     if ylim is not None:
         plt.ylim(*ylim)
@@ -157,12 +159,12 @@ def baseline(data, target, base_model = None, clf = True, file_name = 'metrics.c
 
     X = data.drop([target], axis=1)
     y = data[target].copy()
-    #print('X shape: ',X.shape, '; y shape: ',y.shape)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = tsize, random_state = random)
 
     estimator=base_model.fit(X_train,y_train)
     y_pred=estimator.predict(X_test)
+
     model_pack = {
 
         'trained_model' : estimator,
@@ -172,8 +174,7 @@ def baseline(data, target, base_model = None, clf = True, file_name = 'metrics.c
     }
 
     metrics = eval_metrics(y_pred,y_test,clf)
-    model_str = str(base_model)
-    model_str = model_str[0:model_str.find('(')]
+    model_str = str(base_model)[0:str(base_model).find('(')]
 
     dict4save(metrics, file_name, dir_file, addcols=True, cols='model', vals=model_str,sep=';')
     
@@ -244,11 +245,64 @@ def choose_params(model,clf = True):
                 'class_weight' : [None,'balanced']
             },
 
-            'BagC' : {},
-            'AdaBC' : {},
-            'GBC' : {},
-            'SVC' : {},
-            'XGBC' : {},
+            'BagC' : {
+                #'base_estimator__class_weight': ['balanced'],
+                #'base_estimator__criterion': ['gini'],
+                #'base_estimator__max_depth': [7], 
+                #'base_estimator__max_features': ['log2'], 
+                #'base_estimator__splitter': ['best'],
+                'n_estimators' : [10, 20, 30, 50, 100],
+                'max_samples' : [0.05, 0.1, 0.2, 0.5]
+            },
+            'AdaBC' : {
+                #'base_estimator__class_weight': ['balanced'],
+                #'base_estimator__criterion': ['gini'],
+                #'base_estimator__max_depth': [7], 
+                #'base_estimator__max_features': ['log2'], 
+                #'base_estimator__splitter': ['best'],
+                'n_estimators' : [10, 20, 30, 50, 100]
+            
+            },
+
+            'GBC' : [{
+                #'base_estimator__class_weight': ['balanced'],
+                #'base_estimator__criterion': ['gini'],
+                #'base_estimator__max_depth': [7], 
+                #'base_estimator__max_features': ['log2'], 
+                #'base_estimator__splitter': ['best'],
+                'n_estimators' : [10, 20, 30, 50, 100],
+                'max_depth' : [7,9,11,13,None],
+                'criterion': ['friedman_mse','mse'],
+                'loss': ['log_loss','exponential']
+            },
+            {
+              'loss' : ["log_loss"],
+              'n_estimators' : [100,200,300],
+              'learning_rate': [0.1, 0.05, 0.01, 0.001],
+              'max_depth': [4, 8,16],
+              'min_samples_leaf': [100,150,250],
+              'max_features': [0.3, 0.1]
+              }
+            ],
+
+            'SVC' : [
+                #{'C' : [1,10,50],'kernel' : ['poly','sigmoid','precomputed'],'degree' : [3,4],'class_weight' : [None,'balanced']},
+                {'C': [1, 10, 100, 1000], 'kernel': ['linear'], 'class_weight' : [None,'balanced']},
+                {'C': [1, 10, 100, 1000],  'kernel': ['rbf'],'class_weight' : [None,'balanced']}
+            ],
+
+            'XGBC' : {
+                'nthread':[4], #when use hyperthread, xgboost may become slower
+                'objective':['binary:logistic'],
+                'learning_rate': [0.05], #so called `eta` value
+                'max_depth': [4,5,6,7],
+                'min_child_weight': [1, 5, 10, 11],
+                'subsample': [0.6,0.8,1.0],
+                'colsample_bytree': [0.6,0.7,1.0],
+                'n_estimators': [5,50,100], #number of trees, change it to 1000 for better results
+                'missing':[-999],
+                'seed': [1337]
+            },
         }
 
         return clf_params[model]
@@ -412,10 +466,59 @@ def save_model(model,dirname):
     
     return the_path 
 
+def train_predict_best_model(data, target, model, params, scoring, tsize = 0.2, random = 77, scaling = False, balancing = False):
+    '''
+    
+    '''
+    # Separación data: 
+    X = data.drop([target], axis=1)
+    y = data[target].copy()
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = tsize, random_state = random)
+    
+    # Escalado:
+    if scaling:
+        scaler = StandardScaler().fit(X_train)
+        X_train = scaler.transform(X_train)
+        X_test = scaler.transform(X_test)
+    
+    # Balanceo
+    if balancing:
+        sm = SMOTEENN(random_state = random) 
+        X_train, y_train = sm.fit_resample(X_train, y_train.ravel()) 
+
+        
+
+    # Entrenando al modelo: 
+    estimator = GridSearchCV(model, params, scoring = scoring, refit = 'AUC', return_train_score = True)
+    estimator.fit(X_train,y_train)
+
+    # Predicción con el mejor estimador 
+    y_pred=estimator.best_estimator_.predict(X_test)
+
+    return estimator, X_test, y_test, X_train, y_train, y_pred
+
+def save_all(model, estimator, params, metrics, file_name = 'metrics.csv', dir_file = 'model/model_metrics', dir_model_file = 'model'):
+    '''
+    Objetivo: 
+    ---
+    
+    '''
+    model_str = str(model)[0:str(model).find('(')]
+    
+    file2save = {'model':model_str,'params_tried': str(params),'best_params':str(estimator.best_params_)}
+    file2save.update(metrics)
+    
+    # Guardar modelo:
+    model_path = save_model(estimator.best_estimator_,dir_model_file)
+
+    file2save.update({'model_path' : model_path})
+
+    #Guardar archivo:
+    dict4save(file2save, file_name, dir_file, addcols=False,sep=';')
 
 
-
-def models_generator(data, target, model = None, params = None, clf = True, scaling = True, scoring = {"AUC": "roc_auc", "Accuracy": make_scorer(accuracy_score)}, file_name = 'metrics.csv', dir_file = 'model/model_metrics', dir_model_file = 'model', tsize = 0.2, random = 77):
+def models_generator(data, target, model = None, params = None, clf = True, scaling = True, scoring = {"AUC": "roc_auc", "Accuracy": make_scorer(accuracy_score)}, balancing = False, file_name = 'metrics.csv', dir_file = 'model/model_metrics', dir_model_file = 'model', tsize = 0.2, random = 77):
     '''
     Objetivo: 
     ---
@@ -449,37 +552,16 @@ def models_generator(data, target, model = None, params = None, clf = True, scal
         else:
             model = RandomForestRegressor()
 
-    # Separación data: 
-    X = data.drop([target], axis=1)
-    y = data[target].copy()
+    # Estimador entrenado y predicción: 
+    estimator, X_test, y_test, X_train, y_train, y_pred = train_predict_best_model(data, target, model, params, scoring, tsize = 0.2, random = 77, scaling = scaling, balancing = balancing)
 
-    #print('X shape: ',X.shape, '; y shape: ',y.shape)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = tsize, random_state = random)
-    
-    # Escalado:
-    if scaling:
-        scaler = StandardScaler().fit_transform(X_train)
-        scaler.transform(X_test)
-
-    # Entrenando al modelo: 
-    estimator = GridSearchCV(model, params, scoring = scoring, refit = 'AUC', return_train_score = True)
-    estimator.fit(X_train,y_train)
-
-    # Predicción con el mejor estimador 
-    y_pred=estimator.best_estimator_.predict(X_test)
-
+    # Evaluación de métricas:
     metrics = eval_metrics(y_pred,y_test,clf)
-    model_str = str(model)
-    model_str = model_str[0:model_str.find('(')]
     
-    file2save = {'model':model_str,'params_tried': str(params),'best_params':str(estimator.best_params_)}
-    file2save.update(metrics)
-    print(file2save)
-    model_path = save_model(estimator.best_estimator_,dir_model_file)
-    file2save.update({'model_path' : model_path})
+    # Guardar modelo y métricas obtenidas:
+    save_all(model, estimator, params, metrics, file_name = file_name, dir_file = dir_file, dir_model_file = dir_model_file)
 
-    dict4save(file2save, file_name, dir_file, addcols=False,sep=';')
-    
+    # Variable de salida: 
     model_pack = {
 
         'trained_model' : estimator,
@@ -490,3 +572,4 @@ def models_generator(data, target, model = None, params = None, clf = True, scal
     }
 
     return model_pack
+
