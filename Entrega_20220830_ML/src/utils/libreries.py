@@ -15,7 +15,7 @@ unsupervised = True     # True: if is used unsupervised estimators
 supervised = True       # True: if is used supervised estimators 
                         # False: if not
 
-deep_learning = False   # True: if is used deep learning 
+deep_learning = True   # True: if is used deep learning 
                         # False: if not
 
 imbalanced_data = True  # True: if is used imbalanced data 
