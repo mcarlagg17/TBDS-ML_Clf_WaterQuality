@@ -39,9 +39,10 @@ from phik import phik_matrix
 import pickle
 from sklearn.metrics import make_scorer
 
+
 # APIs
 #import requests
-#import json
+import json
 
 # Data cleaning/ data analisys
 if encode:

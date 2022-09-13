@@ -573,3 +573,105 @@ def models_generator(data, target, model = None, params = None, clf = True, scal
 
     return model_pack
 
+def take_params(str_params):
+    '''
+    Objetivo:
+    ---
+    Transformar los parametros guardados de str a dict y con los valores legibles por GridSearchCV()
+    '''
+
+    dict_params=eval(str_params)
+    params = dict_params.copy()
+
+    for k,v in dict_params.items():
+        params[k]=[v]
+
+    return params
+
+
+def models_duration(data,target,model,params,scoring = {"AUC": "roc_auc", "Accuracy": make_scorer(accuracy_score)}):
+    '''
+    Objetivo:
+    ---
+    Medir el tiempo de entrenamiento y predicción de un modelo
+    '''
+
+    inicio = time.time()
+    train_predict_best_model(data,target,model,params,scoring)
+    fin = time.time()   
+     
+    return fin - inicio
+
+
+def add_duration(data,target,csv):
+    '''
+    Objetivo:
+    ---
+    Añadir la duración a los csv con los datos de modelos
+    '''
+    times = []
+    csv2 = csv.reset_index(drop=True)
+    
+    for i in range(len(csv)):
+        name = csv2['model'][i]
+        models_keys = [ 'LogReg', 'KNNC', 'DTC', 'ETC', 'RFC', 'BagC', 'AdaBC', 'GBC', 'SVC', 'XGBC','MLPC']
+        model = [mk for mk in models_keys if name[0] == mk[0]][0]
+        if model == 'MLPC':
+            times.append(models_duration(data,target,MLPClassifier(),take_params(csv2['best_params'][i])))
+        else:    
+            times.append(models_duration(data,target,choose_models(model,params=None),take_params(csv2['best_params'][i])))
+
+    csv2['duration [s]'] = times
+
+    return csv2
+
+
+
+def clf_models_comparation(csv,xlabel='Precision',ylabel='Models',title='Models comparation',del_last=True):
+    
+    saved_metrics = csv.copy()
+
+    cv_means = saved_metrics['Precision']
+    lista = saved_metrics['model']
+
+    if del_last:
+        cv_means = cv_means[:-1]
+        lista = lista[:-1]
+
+    selected_colors=[colors_classification_models[model] for model in lista]   
+
+
+    cv_frame = pd.DataFrame(
+        {
+            "CrossValMeans":cv_means.astype(float),
+            "Models": lista
+        })
+
+    cv_plot = sns.barplot("CrossValMeans","Models", data = cv_frame, palette=selected_colors)
+
+    cv_plot.set_xlabel(xlabel,fontweight="bold")
+    cv_plot.set_ylabel(ylabel,fontweight="bold")
+    cv_plot = cv_plot.set_title(title,fontsize=16,fontweight='bold')
+
+def models_comparation(csv,xlabel='Precision',ylabel='Models',title='Models comparation',del_last=True, selected_colors='Blues'):
+    
+    saved_metrics = csv.copy()
+
+    cv_means = saved_metrics['Precision']
+    lista = saved_metrics['model']
+
+    if del_last:
+        cv_means = cv_means[:-1]
+        lista = lista[:-1]  
+
+    cv_frame = pd.DataFrame(
+        {
+            "CrossValMeans":cv_means.astype(float),
+            "Models": lista
+        })
+
+    cv_plot = sns.barplot("CrossValMeans","Models", data = cv_frame, palette=selected_colors)
+
+    cv_plot.set_xlabel(xlabel,fontweight="bold")
+    cv_plot.set_ylabel(ylabel,fontweight="bold")
+    cv_plot = cv_plot.set_title(title,fontsize=16,fontweight='bold')    

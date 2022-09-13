@@ -111,6 +111,27 @@ def outlier(data):
 # **Funciones para visualizaciones**
                 ###
 
+# DEFINICIONES
+
+
+colors_classification_models={
+
+                'LogisticRegression' : 'ghostwhite',
+                'KNeighborsClassifier' : 'snow',
+                'DecisionTreeClassifier' : 'ivory',
+                'ExtraTreeClassifier' : 'whitesmoke',
+                'RandomForestClassifier' : 'darkseagreen',
+                'BaggingClassifier' : 'mediumaquamarine', 
+                'AdaBoostClassifier' : 'honeydew',
+                'GradientBoostingClassifier' : 'teal',
+                'SVC' : 'floralwhite',
+                'XGBClassifier' : 'aquamarine',
+                'VotingClassifier': 'lightcyan',
+                'LinearDiscriminantAnalysis': 'seashell'
+            }
+
+# FUNCIONES
+
 def grafica_tendencia(df_day,columns):
     '''
     Objetivo:
@@ -411,6 +432,3 @@ def dict4save(dict, name_file, dirf, addcols = False, cols = 'new cols', vals = 
     
     print('Saved')
 
-# ---------
-# CLASES 
-# ---------
