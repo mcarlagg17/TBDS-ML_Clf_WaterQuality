@@ -33,7 +33,7 @@ selected_params = {'learning_rate': [0.01],
                     'min_samples_leaf': [250], 
                     'n_estimators': [100]}
 
-data = pd.read_csv(os.getcwd()+'/data/processed/data_cleaned.csv')
+data = pd.read_csv(os.getcwd()+'/data/processed/data_cleaned.csv').drop(columns=['Unnamed: 0'])
 
 target = 'is_safe'
 
