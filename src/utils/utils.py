@@ -1,6 +1,7 @@
 # --------------------------------------------------------------------------------
 # FUNCIONES
 # --------------------------------------------------------------------------------
+
 from .libreries import *
 
             ###
@@ -35,8 +36,10 @@ def comp_colna_filna(df_pcp,col=-1):
 
 def del_colna_filna(df,col=-1):
     '''
-    Objetivo: realizar una comprobación las columnas y filas del df para ver si tienen alguna completamente llena de NaN y en tal caso las elimina. 
-
+    Objetivo: 
+    --- 
+    Realizar una comprobación las columnas y filas del df para ver si tienen alguna completamente llena de NaN y en tal caso las elimina. 
+    
     args.
     -----
     df: pd.DataFrame; es el dataset/dataframe principal, que vamos a comparar con el que evalúa si hay nan en filas y columnas.
@@ -60,7 +63,9 @@ def del_colna_filna(df,col=-1):
 
 def transf_dt(df,colstr,change='%Y-%m-%d %H:%M:%S'):
     '''
-    Objetivo: transformar unna columna de tipo str en tipo dtime, haciendo una copia de la original.
+    Objetivo: 
+    ---
+    Transformar unna columna de tipo str en tipo dtime, haciendo una copia de la original.
 
     args.
     -----
@@ -81,7 +86,9 @@ def transf_dt(df,colstr,change='%Y-%m-%d %H:%M:%S'):
 
 def outlier(data):
     '''
-    Objetivo: encontrar el numero de outliers de una columna de un dataset
+    Objetivo: 
+    ---
+    Encontrar el numero de outliers de una columna de un dataset
 
     arg.
     ----
@@ -132,50 +139,19 @@ colors_classification_models={
 
 # FUNCIONES
 
-def grafica_tendencia(df_day,columns):
-    '''
-    Objetivo:
-
-    args.
-    ----
-    ret.
-    ----
-    '''
-    df_spn_365d = df_day[df_day.columns].rolling(window=365,center=True,min_periods=360).mean()
-    df_spn_7d = df_day[df_day.columns].rolling(7, center=True).mean()
-    if(len(columns)==1):
-    
-        fig, eje = plt.subplots()
-        eje.plot(df_day['generation nuclear'], marker='.', markersize=2, color='0.6',
-        linestyle='None', label='Diario')
-        eje.plot(df_spn_7d['generation nuclear'], linewidth=2, label='Media deslizante semanal')
-        eje.plot(df_spn_365d['generation nuclear'], color='0.2', linewidth=3,
-        label='Tendencia (Media deslizante anual)')
-        eje.legend()
-        eje.set_xlabel('Año')
-        eje.set_ylabel('Generacion (MWh)')
-        eje.set_title('Tendencias')
-    elif(len(columns)>1):
-    
-        fig,eje= plt.subplots()
-        for i in columns:
-            eje.plot(df_spn_365d[i],label=i)
-            eje.set_ylim(0,15000)
-            eje.legend()
-            eje.set_ylabel('Producción (MWh)')
-            eje.set_title('Tendencias en la generación')
-
-    else:
-        print('Fallo: pruebe a introducir columnas')
-    
-    return fig
-
 def grafica_pie(df,columns,color=['burlywood','cadetblue','powderblue','slategray','seagreen', 'khaki','mediumaquamarine'],title='Energías'):
     '''
     Objetivo:
+    ---
+    Crear una gráfica de torta.
 
     args.
     ----
+    df: pd.DataFrame; datos a graficar.
+    columns: list; columnas del dataset.
+    color: list; lista de colores de cada columna o etiqueta. (opcional)
+    title: str; título de la gráfica. (opcional)
+
     ret.
     ----
     '''
@@ -195,44 +171,6 @@ def grafica_pie(df,columns,color=['burlywood','cadetblue','powderblue','slategra
     plt.show()
 
     return fig1
-
-def grafica_estacionalidad(df_day,columns,color='RdGy'):
-    '''
-    Objetivo:
-
-    args.
-    ----
-    ret.
-    ----
-    '''
-    fig, ejes = plt.subplots(len(columns), 1, sharex=True)
-    for nombre, eje in zip(columns, ejes):
-        sns.boxplot(data=df_day,x='month',y=nombre,ax=eje,palette=color)
-        eje.set_title(nombre)
-        if eje != ejes[-1]:
-            eje.set_xlabel('')
-
-    return fig
-
-def grafica_acumulada(df,columns):
-    '''
-    Objetivo:
-
-    args.
-    ----
-    ret.
-    ----
-    '''
-    df.index=pd.to_datetime(df.index)
-    df_spn_month_ = df[df.columns].resample('M').sum(min_count=28)
-    df_spn_month_['total_cols']=df_spn_month_[df_spn_month_.columns[df_spn_month_.columns.str.startswith('generation')]].sum(axis=1)
-    fig,eje = plt.subplots()
-    eje.plot(df_spn_month_['total_cols'],color='black',label='generation total (MWh)')
-    df_spn_month_[columns].plot.area(ax=eje,linewidth=0)
-    eje.legend()
-    eje.set_ylabel('Total Mensual (MWh)') 
-
-    return fig
 
 
             ###

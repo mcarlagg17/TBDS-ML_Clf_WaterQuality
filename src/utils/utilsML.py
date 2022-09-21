@@ -1,5 +1,5 @@
 from .libreries import *
-from .utilsEDA import *
+from .utils import *
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -75,7 +75,7 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
     return plt
 
 
-def eval_metrics(y_pred,y_test,clf=True):
+def eval_metrics(y_pred,y_test,clf=True,c_matrix=False):
     '''
     Objetivo: 
     ---
@@ -85,17 +85,21 @@ def eval_metrics(y_pred,y_test,clf=True):
     ---
     y_pred: la predicción realizada por el modelo. 
     y_test: el resultado real del test. 
-    clf: bool; True: si es clasificación.
+    clf: bool; True: si es clasificación. (por defecto)
                False: si es regresión.
-
+    c_matrix: bool; True: obtener matriz de confusión.
+                    False: no obtener la matriz. (por defecto)
     ret.
     ---
     dict; resultado de las métricas.
 
+    * Excepto si c_matrix True y clf True:
+        dict, array; resultados métricas, matriz de confusión.
+
     '''
 
     if clf:
-        #confusion_mtx = confusion_matrix(y_test,y_pred)
+        
         clf_metrics = {
             'ACC' : accuracy_score(y_test,y_pred),
             'Precision' : precision_score(y_test,y_pred),
@@ -104,10 +108,13 @@ def eval_metrics(y_pred,y_test,clf=True):
             'ROC' : roc_auc_score(y_test,y_pred),
             'Jaccard' : jaccard_score(y_test,y_pred)
         }
-
+        
+        if c_matrix:
+            confusion_mtx = confusion_matrix(y_test,y_pred)
+            return clf_metrics,confusion_mtx
         #print(pd.DataFrame({'Values':clf_metrics.values()},index=clf_metrics.keys()))
-
-        return clf_metrics
+        else:
+            return clf_metrics
 
     else:
 
@@ -184,16 +191,16 @@ def choose_params(model,clf = True):
     '''
     Objetivo: 
     ---
-    Elegir los parametros a probar para un modelo concreto.
+    Elegir los parámetros a probar para un modelo concreto.
 
     *args.
     ----
-    model: modelo del cual se quieren los parametros.
+    model: modelo del cual se quieren los parámetros.
     clf: bool; True: si se trata de un modelo de clasificación. 
 
     *ret.
     ----
-    dict; con los parametros a probar.
+    dict; con los parámetros a probar.
 
     '''
     if clf :
@@ -438,7 +445,15 @@ def choose_models(model, params, clf = True):
 
 def save_model(model,dirname):
     '''
-    
+    Objetivo: 
+    ---
+
+    args.
+    ---
+
+    ret.
+    ---
+
     '''
     model_str = str(model)
     model_str = model_str[0:model_str.find('(')]
