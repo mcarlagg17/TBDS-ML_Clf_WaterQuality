@@ -447,13 +447,18 @@ def save_model(model,dirname):
     '''
     Objetivo: 
     ---
+    Guardar el modelo en la carpeta elegida.
 
     args.
     ---
+    model: modelo a guardar.
+    dirname: str; ruta relativa a la carpeta donde se pretende guardar el modelo.
 
     ret.
     ---
+    Realiza un print indicando que el modelo introducido ha sido guardado.
 
+    Devuelve la ruta relativa del modelo.
     '''
     model_str = str(model)
     model_str = model_str[0:model_str.find('(')]
