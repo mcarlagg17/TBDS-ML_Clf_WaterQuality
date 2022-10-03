@@ -1,7 +1,6 @@
-# Flask Calidad del Agua
-
-Implementación del mejor modelo de **Machine Learning** ([repositorio de proyecto ML](https://github.com/mcarlagg17/TBDS_ML_Clf_WaterQuality)). El objetivo es **clasificar si el agua es o no es segura**. 
-Se realiza el despliegue en heroku, utilizando *flask*.
+# Calidad del Agua
+Proyecto de **Machine Learning** cuyo objetivo es crear y comparar ***modelos de clasificación*** de la **calidad del agua**. Además, se implementa el modelo con mayor *precisión* en una *aplicación* *flask*
+([repositorio Github de aplicación flask](https://github.com/mcarlagg17/TBDS_ML_Clf_WaterQuality_flask)).
 
 ![img](https://okdiario.com/img/2018/01/12/agua-cruda.jpg)
 
@@ -33,11 +32,23 @@ Se distingue entre ***segura y no segura*** a partir de los parámetros que se m
 | uranium     | dangerous if greater than 0.3            |\n
 | is_safe     | class attribute {0 - not safe, 1 - safe} |
 
-*La tabla presenta las **variables a introducir mediante un csv** para realizar la predicción con el modelo entrenado.*
+## *ÍNDICE contenido notebooks* 📌 
+---
+0. <a href='src/0_Introduccion.ipynb'>INTRODUCCIÓN</a>
+1. ANÁLISIS EXPLORATORIO DE DATOS (<a href='src/1_EDA.ipynb'>EDA</a>)
+    - 1.1. Acondicionamiento bases de datos
+    - 1.2. Análisis visual
+    - 1.3. Análisis estadístico   
+2. MACHINE LEARNING (<a href='src/2a_ML_Baseline.ipynb'>*1era parte*</a> // <a href='src/2b_ML_BalancedData.ipynb'>*2a parte*</a>)
+    - 2.1. Preparación y limpieza de datos
+    - 2.2. Feature Engineering
+    - 2.3. Modelado
+3. <a href='src/3_Resultados.ipynb'>RESULTADOS</a>
+    - 3.1. Visualización y reporting de los resultados
+    - 3.2. Creación de un pipeline para el flujo automatizado
+---
 
-Pudiendo comprobar un dataset con u
-
-## **Estructura** del proyecto flask 🗿 
+## **Estructura** del proyecto 🗿 
 - ***README.md***: *archivo actual, información inicial.*
 - ***app_model.py***: *archivo python que contiene las acciones de la aplicación.*
 - ***static***:
@@ -69,6 +80,10 @@ Una vez creado el entorno, colocándonos en la carpeta *utils* dentro de *src* i
 >> pip install -r requirements.txt
 ```
 
+## Consejo de uso 🤓
+
+Comenzar 
+
 ## Autora 👩🏽‍💻
 
 * **María Carla González González** - [mcarlagg17](https://github.com/mcarlagg17)
@@ -94,4 +109,11 @@ Una vez creado el entorno, colocándonos en la carpeta *utils* dentro de *src* i
 
 ---
 
-![img](./static/img/logo.jpg)
+![img](./src/img/logo.jpg)
+
+### *Contacto:*
+___
+* Email: ***carla.glezz@gmail.com***
+* Linkedin: ***https://www.linkedin.com/in/mariacarlagonzalezgonzalez/***
+---
+---
