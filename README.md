@@ -32,7 +32,19 @@ Se distingue entre ***segura y no segura*** a partir de los parámetros que se m
 | uranium     | dangerous if greater than 0.3            |\n
 | is_safe     | class attribute {0 - not safe, 1 - safe} |
 
-## *ÍNDICE contenido notebooks* 📌 
+## **Estructura** del proyecto 🗿 
+- ***README.md***: *archivo actual, información inicial.*
+- ***app_model.py***: *archivo python que contiene las acciones de la aplicación.*
+- ***static***:
+    - cover.css: indicaciones generales de gráficos.
+- ***templates***: archivos con las distintas pantallas.
+- *data/example*: *archivos csv de ejemplo.*
+- *img*: *almacenan imagenes y figuras.*
+- **model_selected.pkl**: modelo seleccionado.
+- **scaler.pkl**: escalador entrenado.
+- *requirements.txt*: archivo con los requerimientos de instalación mínima.
+
+### *Contenidos notebooks* 📌 
 ---
 0. <a href='src/0_Introduccion.ipynb'>INTRODUCCIÓN</a>
 1. ANÁLISIS EXPLORATORIO DE DATOS (<a href='src/1_EDA.ipynb'>EDA</a>)
@@ -47,19 +59,6 @@ Se distingue entre ***segura y no segura*** a partir de los parámetros que se m
     - 3.1. Visualización y reporting de los resultados
     - 3.2. Creación de un pipeline para el flujo automatizado
 ---
-
-## **Estructura** del proyecto 🗿 
-- ***README.md***: *archivo actual, información inicial.*
-- ***app_model.py***: *archivo python que contiene las acciones de la aplicación.*
-- ***static***:
-    - cover.css: indicaciones generales de gráficos.
-- ***templates***: archivos con las distintas pantallas.
-- *data/example*: *archivos csv de ejemplo.*
-- *img*: *almacenan imagenes y figuras.*
-- **model_selected.pkl**: modelo seleccionado.
-- **scaler.pkl**: escalador entrenado.
-- *requirements.txt*: archivo con los requerimientos de instalación mínima.
-
 
 ## Preparación 🔧
 
@@ -88,6 +87,12 @@ Comenzar
 
 * **María Carla González González** - [mcarlagg17](https://github.com/mcarlagg17)
 
+### *Información de contacto:*
+___
+* Email: ***carla.glezz@gmail.com***
+* Linkedin: ***https://www.linkedin.com/in/mariacarlagonzalezgonzalez/***
+---
+
 ## Tutores 👨‍🏫
 
 * **Marco Russo** - [marcusRB](https://github.com/marcusRB) 
@@ -110,10 +115,3 @@ Comenzar
 ---
 
 ![img](./src/img/logo.jpg)
-
-### *Contacto:*
-___
-* Email: ***carla.glezz@gmail.com***
-* Linkedin: ***https://www.linkedin.com/in/mariacarlagonzalezgonzalez/***
----
----
