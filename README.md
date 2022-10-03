@@ -34,17 +34,19 @@ Se distingue entre ***segura y no segura*** a partir de los parámetros que se m
 
 ## **Estructura** del proyecto 🗿 
 - ***README.md***: *archivo actual, información inicial.*
-- ***app_model.py***: *archivo python que contiene las acciones de la aplicación.*
-- ***static***:
-    - cover.css: indicaciones generales de gráficos.
-- ***templates***: archivos con las distintas pantallas.
-- *data/example*: *archivos csv de ejemplo.*
-- *img*: *almacenan imagenes y figuras.*
-- **model_selected.pkl**: modelo seleccionado.
-- **scaler.pkl**: escalador entrenado.
-- *requirements.txt*: archivo con los requerimientos de instalación mínima.
+- ***Proyecto_Machine_Learning.ipynb***: *notebook con el enunciado del proyecto.*
+- ***proyect_resume.ipynb***: *notebook con la línea de desarrollo seguida en el proyecto. Se presentan las ideas, de los distintos notebooks que componen el proyecto, dando una visión general de los resultados obtenidos y cómo se ha llegado a ellos*
 
-### *Contenidos notebooks* 📌 
+- ***src***:
+    - **data**: carpeta con los dataset procesados y no procesados.
+    - **img**: carpeta con figuras e imágenes utilizadas o extraídas del proyecto. 
+    - **model**: 
+        - modelos entrenados en archivos .pkl, ya preparados para su uso.
+        - **metrics**: carpeta con los csv que continen las métricas extraídas de los distintos estimadores evaluados.
+    - **utils**: carpeta donde se encuentran los archivos con las librerías necesarias y las funciones creadas.
+    - *notebooks:* notebooks con el desarrollo del proyecto. A continuación se presenta el contenido de estos.
+
+### *Contenido notebooks* 📌 
 ---
 0. <a href='src/0_Introduccion.ipynb'>INTRODUCCIÓN</a>
 1. ANÁLISIS EXPLORATORIO DE DATOS (<a href='src/1_EDA.ipynb'>EDA</a>)
@@ -81,7 +83,7 @@ Una vez creado el entorno, colocándonos en la carpeta *utils* dentro de *src* i
 
 ## Consejo de uso 🤓
 
-Comenzar 
+Comenzar leyendo el archivo <a href='proyect_resume.ipynb'>proyect_resume</a> para entender mejor la organización y extensión de este proyecto. 
 
 ## Autora 👩🏽‍💻
 
