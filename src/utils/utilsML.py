@@ -486,9 +486,29 @@ def save_model(model,dirname):
     
     return the_path 
 
-def train_predict_best_model(data, target, model, params, scoring, tsize = 0.2, random = 77, scaling = False, balancing = False):
+def train_predict_best_model(data, target, model, params, scoring, tsize = 0.2, random = 77, scaling = False, balancing = False, scaler = None):
     '''
-    
+    Objetivo: 
+    ---
+    Entrenar el modelo con los mejores parámetros introducidos y predecir con este.
+
+    args.
+    ---
+    data: dataset completo. 
+    target: str; variable objetivo.
+    model: 
+    params: dict; conjunto de parámetros para modificar y probar mediante GridSearchCV.
+    scoring: dict; métrica(s) a optimizar en el GridSearchCV.
+    tsize: float; tamaño en tanto por uno del test. (Por defecto: 0.2)
+    random: int; parámetro elegido para randomizar. (Por defecto: 77)
+    scaling: bool; True para escalar y False para no escalar los datos. 
+    scaler: None si se realiza el escalado generado/entrenado en la propia función y el escalador entrenado si se pretende usar uno concreto ya preentrenado.
+    balancing: bool; True para balancear los datos y Falso si no se requiere.
+
+    ret.
+    ---
+    estimator, X_test, y_test, X_train, y_train, y_pred
+
     '''
     # Separación data: 
     X = data.drop([target], axis=1)
@@ -498,9 +518,11 @@ def train_predict_best_model(data, target, model, params, scoring, tsize = 0.2, 
     
     # Escalado:
     if scaling:
-        scaler = StandardScaler().fit(X_train)
+        if scaler == None:
+            scaler = StandardScaler().fit(X_train)
         X_train = scaler.transform(X_train)
         X_test = scaler.transform(X_test)
+    
     
     # Balanceo
     if balancing:
@@ -538,20 +560,26 @@ def save_all(model, estimator, params, metrics, file_name = 'metrics.csv', dir_f
     dict4save(file2save, file_name, dir_file, addcols=False,sep=';')
 
 
-def models_generator(data, target, model = None, params = None, clf = True, scaling = True, scoring = {"AUC": "roc_auc", "Accuracy": make_scorer(accuracy_score)}, balancing = False, file_name = 'metrics.csv', dir_file = 'model/model_metrics', dir_model_file = 'model', tsize = 0.2, random = 77):
+def models_generator(data, target, model = None, params = None, clf = True, scaling = True, scaler=None, scoring = {"AUC": "roc_auc", "Accuracy": make_scorer(accuracy_score)}, balancing = False, file_name = 'metrics.csv', dir_file = 'model/model_metrics', dir_model_file = 'model', tsize = 0.2, random = 77):
     '''
     Objetivo: 
     ---
-    Crear un modelo inicial orientativo.
+    Entrenar un modelo, evaluar sus métricas y guardar los resultados obtenidos en el archivo indicado.
 
     args.
     ----
     data: pd.DataFrame; el dataset completo, con los valores numéricos.
     target: str; nombre de la columna objetivo, variable dependiente.
-    base_model: estimador que se va a utilizar. Predeterminadamente se utilizar RandomForest(). (opcional)
+    model: estimador que se va a utilizar. Predeterminadamente se utilizar RandomForest(). (opcional)
+    params: parámetros que se prueban para obtener el mejor modelo mediante el GridSearchCV. (opcional)
     clf: True/False; si es un dataset de clasificación (True) si es de regresión (False). (opcional)
     tsize: float; tamaño del test [0.0,1.0]. (opcional)
     random: int; random state, semilla. (opcional)
+    scaling: bool; True para escalar y False para no escalar los datos. 
+    scaler: None si se realiza el escalado generado/entrenado en la propia función y el escalador entrenado si se pretende usar uno concreto ya preentrenado.
+    scoring: dict; métrica(s) a optimizar en el GridSearchCV.
+    balancing: bool; True para balancear los datos y Falso si no se requiere.
+
 
     ret.
     ----
@@ -573,7 +601,7 @@ def models_generator(data, target, model = None, params = None, clf = True, scal
             model = RandomForestRegressor()
 
     # Estimador entrenado y predicción: 
-    estimator, X_test, y_test, X_train, y_train, y_pred = train_predict_best_model(data, target, model, params, scoring, tsize = 0.2, random = 77, scaling = scaling, balancing = balancing)
+    estimator, X_test, y_test, X_train, y_train, y_pred = train_predict_best_model(data, target, model, params, scoring, tsize = tsize, random = random, scaling = scaling, balancing = balancing, scaler=scaler)
 
     # Evaluación de métricas:
     metrics = eval_metrics(y_pred,y_test,clf)
@@ -648,7 +676,11 @@ def add_duration(data,target,csv):
 
 
 def clf_models_comparation(csv,xlabel='Precision',ylabel='Models',title='Models comparation',del_last=True):
-    
+    '''
+    Objetivo:
+    ---
+    Comparar mediante un histograma las métricas obtenidas con los distintos modelos de clasificación.
+    '''
     saved_metrics = csv.copy()
 
     cv_means = saved_metrics['Precision']
@@ -674,7 +706,12 @@ def clf_models_comparation(csv,xlabel='Precision',ylabel='Models',title='Models 
     cv_plot = cv_plot.set_title(title,fontsize=16,fontweight='bold')
 
 def models_comparation(csv,xlabel='Precision',ylabel='Models',title='Models comparation',del_last=True, selected_colors='Blues'):
-    
+    '''
+    Objetivo:
+    ---
+    Comparar mediante un histograma las métricas obtenidas con los distintos modelos de clasificación.
+    '''
+
     saved_metrics = csv.copy()
 
     cv_means = saved_metrics['Precision']

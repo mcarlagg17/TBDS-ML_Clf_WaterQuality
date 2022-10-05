@@ -179,7 +179,19 @@ def grafica_pie(df,columns,color=['burlywood','cadetblue','powderblue','slategra
 
 def test_normalidad(data, col,alpha=0.05):
     '''
-    
+    Objetivo: 
+    ---
+    Realizar test de normalidad
+
+    args.
+    ---
+    data: dataset; todos los  datos
+    col: str; columna del dataset a la que se le realiza el test
+    alpha: float; límite de hipótesis
+
+    ret.
+    ---
+    print con resultado y gráficos
     '''
     serie=data[col]
     # D'Agostino's K-squared test
@@ -188,7 +200,7 @@ def test_normalidad(data, col,alpha=0.05):
     print("D'Agostino's K2 test:")
     print(f"\t Estadístico = {k2}, p-value = {p_value}")
     
-    alpha=0.05
+    
     if p_value < alpha:
         print(f"p-value < {alpha} -> Se rechaza H0 \n\t  No es posible asegurar que {col} sigue una distribución normal.")
     else:
@@ -222,7 +234,19 @@ def test_normalidad(data, col,alpha=0.05):
 
 def test_homocedasticidad(col1,col2,alpha=0.05):
     '''
-    
+    Objetivo: 
+    ---
+    Realizar test de homocedasticidad entre dos variables.
+
+    args.
+    ---
+    col1: list; una variable.
+    col2: list; otra variable.
+    alpha: float; límite de hipótesis. (Por defecto: 0.05)
+
+    ret.
+    ---
+    print con resultado
     '''
     # Levene test
     # ==============================================================================
@@ -248,7 +272,9 @@ def test_homocedasticidad(col1,col2,alpha=0.05):
 
 def test_homocedasticidad_df(df):
     '''
-    
+    Objetivo: 
+    ---
+    Realizar test de homocedasticidad a todo un dataset.
     '''
     lista=list(df.select_dtypes(include='number').columns)
     n=0
@@ -278,7 +304,9 @@ def evaluar_hipotesis_df(df):
 
 def chi2_comp(df,var1,var2,alpha=0.05):
     '''
-    
+    Objetivo:
+    ---
+    Aceptar o rechazar la hipotesis mediante el método Chi cuadrado.
     '''
     stat, p, dof, expected=ss.chi2_contingency(pd.crosstab(df[var1],df[var2]))
     flag=0
