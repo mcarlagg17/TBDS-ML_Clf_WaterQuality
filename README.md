@@ -44,6 +44,7 @@ Se distingue entre ***segura y no segura*** a partir de los parámetros que se m
         - modelos entrenados en archivos .pkl, ya preparados para su uso.
         - **metrics**: carpeta con los csv que continen las métricas extraídas de los distintos estimadores evaluados.
     - **utils**: carpeta donde se encuentran los archivos con las librerías necesarias y las funciones creadas.
+        - *requierements.txt*: archivo con los requerimientos de instalación mínima.
     - *notebooks:* notebooks con el desarrollo del proyecto. A continuación se presenta el contenido de estos.
 
 ### *Contenido notebooks* 📌 

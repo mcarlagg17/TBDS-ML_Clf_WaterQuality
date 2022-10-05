@@ -1,0 +1,8 @@
+pandas==1.4.4
+scikit-learn==1.1.1
+matplotlib==3.6.0
+seaborn==0.12.0
+statsmodels==0.13.2
+xgboost==1.6.2
+phik==0.12.2
+imblearn
